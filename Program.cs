@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 
 
 /// <summary>
-/// Example output:
+/// Example output of first version:
 /// https://imgur.com/E9xeaYa
-/// 
+/// Latest improvements remove redundancies and reduce the running time of the algorithm. 
+///
 /// Command line args given:
 /// "35" "4 3 6 5 3 7 9 1 10" "4 6 2 4 6 3 7 3 9"
 /// 
@@ -17,6 +18,8 @@ namespace Knapsack
 {
     class Program
     {
+
+
         /// <summary>
         /// compare two integers for the maximum between them
         /// </summary>
@@ -35,12 +38,13 @@ namespace Knapsack
 
         /// <summary>
         /// This is optional, but it should return the items that were actually used in the ideal knapsack.
-        /// Includes index, weight, and value
+        /// Includes index, weight, and value, as well as final weight and value
         /// 
         /// Based on:
         /// https://beckernick.github.io/dynamic-programming-knapsack/
         /// </summary>
-        /// <param name="littleKnapsack">the n x m array that stores max capacity of </param>
+        /// <param name="littleKnapsack">the n x m array that stores max capacity of a knapsack
+        /// n = weight, m = num of items</param>
         /// <param name="numItems">the integer nunmber of items that were in the knapsack</param>
         /// <param name="remainingWeight">the max knapsack weight to test
         /// begins with the maximum knapsack weight and reduces as items are chosen</param>
@@ -51,46 +55,63 @@ namespace Knapsack
             int remainingWeight, int[] itemWeights, int[] itemValues)
         {
             // this part will make a string of indices of items that fit the knapsack
-            string[] chosenItems = new string[numItems];
             int anItemsWeight = 0;
-
-            for (int downCownter = numItems; downCownter > 0; downCownter--)
-            {
-                // if the jth item (index downcounter) is in the knapsack,
-                // then the weight should change between the little knapsack's
-                // j and j-1 values for the same weight. Remove the item, label
-                // the item as chosen, and continue; otherwise, give a dummy label
-                if (littleKnapsack[remainingWeight, downCownter] != littleKnapsack[remainingWeight, downCownter - 1])
-                {
-                    chosenItems[downCownter - 1] = "Chosen";
-                    anItemsWeight = itemWeights[downCownter - 1];
-                    remainingWeight = remainingWeight - anItemsWeight;
-                }
-                else
-                {
-                    chosenItems[downCownter - 1] = " ";
-                }
-            }
 
             string chosenItemString = "";
             int weightCounter = 0;
             int valueCounter = 0;
 
-            for (int index = 0; index < chosenItems.Length; index++)
+            for (int downCownter = numItems; downCownter > 0; downCownter--)
             {
-                if (chosenItems[index] == "Chosen")
+                // if the jth item (index downcounter) is in the knapsack,
+                // then the weight should change between the little knapsack's
+                // j and j-1 values for the same weight.
+                // Attach relevant info to the string of chosen items
+                // Attached in reverse order to reflect reverse iteration
+                // add values to weight and value counters
+
+                // Old version: Remove the item, label the item as chosen, and continue;
+                //no -> otherwise, give a dummy label//
+
+                if (littleKnapsack[remainingWeight, downCownter] != littleKnapsack[remainingWeight, downCownter - 1])
                 {
-                    chosenItemString += $"{index.ToString()} - Weight: {itemWeights[index]}\tValue: {itemValues[index]}\n";
-                    weightCounter += itemWeights[index];
-                    valueCounter += itemValues[index];
+                    if (downCownter == 1) //final string
+                    {
+                        chosenItemString = $"{(downCownter - 1).ToString()} - Weight: {itemWeights[downCownter - 1]}\tValue: {itemValues[downCownter - 1]}"
+                        + chosenItemString;
+                    }
+                    else //the final item might not be when downCounter is 1; that's the only thing
+                    {
+                        chosenItemString = $"\n{(downCownter - 1).ToString()} - Weight: {itemWeights[downCownter - 1]}\tValue: {itemValues[downCownter - 1]}"
+                        + chosenItemString;
+                    }
+                    anItemsWeight = itemWeights[downCownter - 1];
+                    weightCounter += anItemsWeight;
+                    valueCounter += itemValues[downCownter - 1];
+
+                    
+                    remainingWeight = remainingWeight - anItemsWeight;
                 }
             }
-            chosenItemString += $"Total Weight: {weightCounter}\tTotal Value: {valueCounter}";
+
+            
+            //original code looks nicer, but uses an extra loop
+            //for (int index = 0; index < chosenItems.Length; index++)
+            //{
+            //    if (chosenItems[index] == "Chosen")
+            //    {
+            //        chosenItemString += $"{index.ToString()} - Weight: {itemWeights[index]}\tValue: {itemValues[index]}\n";
+            //        weightCounter += itemWeights[index];
+            //        valueCounter += itemValues[index];
+            //    }
+            //}
+            chosenItemString += $"\nTotal Weight: {weightCounter}\tTotal Value: {valueCounter}";
             return chosenItemString;
         }
 
 
         /// <summary>
+        /// Book: Algorithms by Dasgupta/Padadimitriou/Vazirani
         /// Implements pseudocode algorithm from book pg. 182:
         /// """ Initialize all K(0, j) = 0 and all K(w, 0) = 0
         /// for j = 1 to n:
@@ -238,7 +259,7 @@ namespace Knapsack
                         int[] itemValues = Array.ConvertAll(itemValuesString, int.Parse);
                         int knapVal =
                             KnapsackSolver(maxWeight, itemWeights, itemValues, itemNumbers);
-                        Console.Write(knapVal);
+                        //Console.Write(knapVal);
                         Console.ReadLine();
                     }
                     else
@@ -267,7 +288,7 @@ namespace Knapsack
                         int knapVal =
                             KnapsackSolver(Convert.ToInt32(passedInArguments[0]), itemWeights,
                             itemValues, itemValues.Length);
-                        Console.Write(knapVal);
+                        //Console.Write(knapVal);
                         Console.ReadLine();
                     }
                     else
@@ -299,7 +320,7 @@ namespace Knapsack
 
                             int knapVal = KnapsackSolver(maxWeight, itemWeights,
                                 itemValues, itemCount);
-                            Console.Write(knapVal);
+                            //Console.Write(knapVal); //this is now redundant
                             Console.ReadLine();
                         }
                         else
