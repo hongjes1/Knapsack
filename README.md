@@ -11,6 +11,4 @@ The Knapsack Problem is an [optimization problem](https://en.wikipedia.org/wiki/
 ## Knapsack Problem complexity
 The Knapsack Problem is one of several problems described as *NP-Complete*. Such problems can be decided in polynomial (not exponential time) and can be reduced to another NP-Complete problem.
 
-The dynamic programming algorithm runs in O(nW) time for n items and W maximum weight. This looks like polynomial time. However, an increase in integer size, calculated in bits, results in exponential growth of run-time. The Knapsack problem is thus labeled as [weakly NP-complete](https://en.wikipedia.org/wiki/Weak_NP-completeness).
-
-(to be continued)
+The dynamic programming algorithm runs in O(nW) time for n items and W maximum weight. This looks like polynomial time. However, an increase in integer size (that is, the size, not value of W), calculated in *bits*, results in exponential growth of run-time. The Knapsack problem is thus labeled as [weakly NP-complete](https://en.wikipedia.org/wiki/Weak_NP-completeness). There are decent explanations online of the pseudo-polynomial issues associated with the Knapsack problem, of which I'll link [this](https://stackoverflow.com/questions/3907545/how-to-understand-the-knapsack-problem-is-np-complete). Therefore, this program will run much faster and more reliably with smaller weight values (avoiding `OutOfMemoryException` issues).
